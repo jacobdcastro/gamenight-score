@@ -1,5 +1,5 @@
 node_modules
 build
 
-default.json
-default.env
+config/default.json
+*.env
