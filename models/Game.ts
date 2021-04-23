@@ -1,14 +1,29 @@
-import mongoose from 'mongoose';
-import { playerSchema } from './Player';
+import { Document, Schema, model } from 'mongoose';
+import { PlayerDoc } from './Player';
 import { roundSchema } from './Round';
-const { Schema, model } = mongoose;
+import { ID } from './types';
 
-const gameSchema = new Schema({
+interface GameSchema {
+  title: string;
+  passcode: string;
+  players: ID[] | PlayerDoc[];
+  maxNumberOfRounds: number;
+  currentRound: any;
+  rounds: ID[] | PlayerDoc[];
+  hideScores: boolean;
+  startTime: Date;
+  endTime: Date;
+  expired: boolean;
+}
+
+interface GameDoc extends GameSchema, Document {}
+
+const gameSchemaFields: Record<keyof GameSchema, any> = {
   title: {
     type: String,
     required: true,
   },
-  password: {
+  passcode: {
     type: String,
     required: true,
   },
@@ -75,8 +90,10 @@ const gameSchema = new Schema({
   expired: {
     type: Boolean,
   },
-});
+};
 
-const Game = model('Game', gameSchema);
+const gameSchema = new Schema(gameSchemaFields);
+
+const Game = model<GameDoc>('Game', gameSchema);
 
 export default Game;

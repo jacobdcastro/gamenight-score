@@ -1,7 +1,17 @@
-import mongoose from 'mongoose';
-const { Schema, model } = mongoose;
+import { Document, Schema, model } from 'mongoose';
 
-export const playerSchema = new Schema({
+interface PlayerSchema {
+  name: string;
+  email: string;
+  password: string;
+  gmCreated: boolean;
+  color: string;
+  icon: string;
+}
+
+export interface PlayerDoc extends PlayerSchema, Document {}
+
+const playerSchemaFields: Record<keyof PlayerSchema, any> = {
   name: {
     type: String,
     required: true,
@@ -9,6 +19,7 @@ export const playerSchema = new Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   password: {
     type: String,
@@ -26,8 +37,10 @@ export const playerSchema = new Schema({
     type: String,
     required: false,
   },
-});
+};
 
-const Player = model('Player', playerSchema);
+export const playerSchema = new Schema(playerSchemaFields);
+
+const Player = model<PlayerDoc>('Player', playerSchema);
 
 export default Player;
