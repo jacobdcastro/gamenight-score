@@ -10,13 +10,13 @@ module.exports = {
     filename: 'bundle.js',
   },
   resolve: {
-    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
+    extensions: ['.js', '.ts', '.tsx', '.json'],
   },
   module: {
     rules: [
       {
         test: /\.(ts|tsx)$/,
-        loader: 'awesome-typescript-loader',
+        loader: 'ts-loader',
       },
       {
         enforce: 'pre',
@@ -25,7 +25,15 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        loader: ['css-loader', 'postcss-loader'],
+        use: [
+          'style-loader',
+          '@teamsupercell/typings-for-css-modules-loader',
+          {
+            loader: 'css-loader',
+            options: { modules: true },
+          },
+          'postcss-loader',
+        ],
       },
     ],
   },
