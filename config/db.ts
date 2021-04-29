@@ -1,16 +1,20 @@
 import mongoose from 'mongoose';
 import config from 'config';
-const db: string = config.get('mongoURI');
+
+const NODE_ENV = process.env.NODE_ENV;
+const key = NODE_ENV === 'production' ? 'mongoURIProd' : 'mongoURIDev';
+const db: string = config.get(key);
 
 const connectDB = async () => {
   try {
     await mongoose.connect(db, {
       useNewUrlParser: true,
-      useFindAndModify: false,
       useUnifiedTopology: true,
     });
 
-    console.log('MongoDB Connected!');
+    console.log(
+      `⚡️ Successfully connected to MongoDB database: '${NODE_ENV}'`
+    );
   } catch (err) {
     console.error(err.message);
 
