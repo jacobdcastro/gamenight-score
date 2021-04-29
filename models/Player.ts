@@ -1,12 +1,14 @@
 import { Document, Schema, model } from 'mongoose';
+import { ID } from './types';
 
-interface PlayerSchema {
+export interface PlayerSchema {
   name: string;
-  email: string;
+  username: string;
   password: string;
   gmCreated: boolean;
   color: string;
   icon: string;
+  gamesPlayed: ID[];
 }
 
 export interface PlayerDoc extends PlayerSchema, Document {}
@@ -14,9 +16,9 @@ export interface PlayerDoc extends PlayerSchema, Document {}
 const playerSchemaFields: Record<keyof PlayerSchema, any> = {
   name: {
     type: String,
-    required: true,
+    required: false,
   },
-  email: {
+  username: {
     type: String,
     required: true,
     unique: true,
@@ -37,6 +39,12 @@ const playerSchemaFields: Record<keyof PlayerSchema, any> = {
     type: String,
     required: false,
   },
+  gamesPlayed: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Game',
+    },
+  ],
 };
 
 export const playerSchema = new Schema(playerSchemaFields);
