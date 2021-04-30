@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
 export type MiddlewareFn = (
-  req: Request,
+  req: Request | any,
   res: Response,
   next: NextFunction
 ) => void;
