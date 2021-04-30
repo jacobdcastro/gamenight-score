@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 import config from 'config';
+import { MiddlewareFn } from './types';
 
-const verify = (req, res, next) => {
+const verifyToken: MiddlewareFn = (req, res, next) => {
   // Get token form header
   const token = req.header('x-auth-token');
 
@@ -11,13 +12,13 @@ const verify = (req, res, next) => {
   }
 
   // Verify token
-  try {
-    const decoded = jwt.verify(token, config.get('jwtsecret'));
-    req.user = decoded.user;
+  jwt.verify(token, config.get('jwtsecret'), (err: any, user: any) => {
+    if (err) {
+      res.status(403).json({ msg: 'Token is not valid' });
+    }
+    req.user = user;
     next();
-  } catch (err) {
-    res.status(401).json({ msg: 'Token is not valid' });
-  }
+  });
 };
 
-export default verify;
+export default verifyToken;

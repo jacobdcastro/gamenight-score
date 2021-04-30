@@ -4,8 +4,10 @@ dotenv.config({ path: __dirname + '/default.env' });
 import express from 'express';
 import connectDB from './config/db';
 import cors from 'cors';
+import helmet from 'helmet';
 import path from 'path';
 import mongoose from 'mongoose';
+import { playerRouter } from './routes';
 
 const PORT = process.env.PORT;
 
@@ -14,8 +16,8 @@ const app = express();
 connectDB();
 
 app.use(express.json());
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(helmet());
 app.use(cors());
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -27,13 +29,15 @@ app.use((req, res, next) => {
   next();
 });
 
-// point to static folder
-app.use(express.static(path.join(__dirname, 'client', 'build')));
+app.use('/api/player', playerRouter);
 
-// Catch all routes to index.html in react app
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-});
+// // point to static folder
+// app.use(express.static(path.join(__dirname, 'client', 'build')));
+
+// // Catch all routes to index.html in react app
+// app.get('*', (req, res) => {
+//   res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+// });
 
 // Once mongo database is open, start listening at port
 // and connect the db collection to pusher to watch for changes

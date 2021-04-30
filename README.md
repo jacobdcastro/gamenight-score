@@ -25,7 +25,7 @@ Dutch Blitz scorekeepiing app to sync the scoreboard to multiple devices.
 
 1. submit username, password
 2. username, password (encrypted) added to database as new user
-3. jwt signed w/ user { userId, isGamemaster }
+3. jwt signed w/ user { userId }
 4. jwt returned to client and stored in localstorage
 5. redirected to private "create game" route OR redirected to private "enter invite code" route
 6. once game is created, new jwt signed w/ payload { userId, isGamemaster, gameId }

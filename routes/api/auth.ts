@@ -1,6 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import sendError from '../../helpers/error';
+import config from 'config';
+import { sendServerError } from '../../utils/errors';
 
 const router = express.Router();
 
@@ -13,9 +14,9 @@ router.post('/sign', async (req, res) => {
   try {
     const payload = { userId };
 
-    jwt;
+    jwt.sign(payload, config.get('jwtsecret'), { expiresIn: 60 * 60 });
   } catch (err) {
-    sendError(res, err);
+    sendServerError(res, err);
   }
 });
 
