@@ -2,15 +2,15 @@ import express, { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from 'config';
-import { param } from 'express-validator';
 import {
   validatePlayerEditFields,
+  validatePlayerIdParam,
   validateUsernameAndPassword,
 } from '../../middleware/validator';
 import { Player } from '../../models';
 import { PlayerSchema } from '../../models/Player';
 import { sendServerError } from '../../utils/errors';
-import verifyToken from '../../middleware/auth';
+import { verifyToken, verifyId } from '../../middleware/auth';
 
 const playerRouter = express.Router();
 
@@ -108,20 +108,54 @@ playerRouter.post(
   }
 );
 
-// @route   POST api/player/signup
-// @desc    Login to player account
+// @route   GET api/player/:playerId
+// @desc    Get player data by ID
 // access   Public
-playerRouter.put(
-  '/:playerId/edit',
-  verifyToken,
-  validatePlayerEditFields,
+playerRouter.get(
+  '/:playerId',
+  validatePlayerIdParam,
   async (req: Request, res: Response) => {
     try {
-      // TODO save edited fields to MongoDB
+      const player = await Player.findById(req.params.playerId);
+      res.json(player);
     } catch (err) {
       sendServerError(res, err);
     }
   }
 );
+
+// @route   PUT api/player/:playerId/edit
+// @desc    Edit player data by ID
+// access   Private
+playerRouter.put(
+  '/:playerId/edit',
+  verifyToken,
+  verifyId,
+  validatePlayerEditFields,
+  async (req: Request, res: Response) => {
+    try {
+      const result = await Player.updateOne(
+        { _id: req.params.playerId },
+        { ...req.body }
+      );
+      res.json(result);
+    } catch (err) {
+      sendServerError(res, err);
+    }
+  }
+);
+
+// !! TEMPORARY WILL COMMENT OUT SOON !!
+// !! @route   DELETE api/player/delete-all
+// !! @desc    Delete all player documents
+// !! access   Public
+playerRouter.delete('/delete-all', async (req: Request, res: Response) => {
+  try {
+    await Player.deleteMany();
+    res.status(200);
+  } catch (err) {
+    sendServerError(res, err);
+  }
+});
 
 export default playerRouter;

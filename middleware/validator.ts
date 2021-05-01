@@ -22,13 +22,17 @@ export const validateUsernameAndPassword = [
   validateReq,
 ];
 
+export const validatePlayerIdParam = param('playerId').not().isEmpty();
+
 // for route /api/player/:playerId/edit
 export const validatePlayerEditFields = [
-  param('playerId').not().isEmpty(),
+  validatePlayerIdParam,
   body('name').optional(),
   body('username').optional(),
   body('password').optional().isLength({ min: 6 }),
+  // TODO use regex to check for hexcode i.e. #ffffff
   body('color').optional().isLength({ min: 7, max: 7 }),
+  // TODO use regex to check for image url
   body('icon').optional(),
   validateReq,
 ];

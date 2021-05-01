@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import config from 'config';
 import { MiddlewareFn } from './types';
 
-const verifyToken: MiddlewareFn = (req, res, next) => {
+export const verifyToken: MiddlewareFn = (req, res, next) => {
   // Get token form header
   const token = req.header('x-auth-token');
 
@@ -21,4 +21,11 @@ const verifyToken: MiddlewareFn = (req, res, next) => {
   });
 };
 
-export default verifyToken;
+export const verifyId: MiddlewareFn = (req, res, next) => {
+  if (req?.user?.id === req?.params?.playerId) next();
+  else res.status(403).json({ msg: 'You cannot access this route' });
+};
+
+export const verifyGamemaster: MiddlewareFn = (req, res, next) => {
+  // TODO check if { gamemaster: true }
+};
