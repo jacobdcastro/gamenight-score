@@ -1,71 +1,28 @@
 import { Document, Schema, model } from 'mongoose';
-import { PlayerDoc } from './Player';
-import { roundSchema } from './Round';
-import { ID } from './types';
+import { PlayerDoc, playerSchema } from './Player';
+import { RoundDoc, RoundSchema, roundSchema } from './Round';
 
-interface GameSchema {
-  title: string;
+export interface GameSchema {
   passcode: string;
-  players: ID[] | PlayerDoc[];
+  players: PlayerDoc[];
   maxNumberOfRounds: number;
   currentRound: any;
-  rounds: ID[] | PlayerDoc[];
+  rounds: RoundDoc[];
   hideScores: boolean;
-  startTime: Date;
-  endTime: Date;
+  dateCreated: Date;
+  startTime: Date | null;
+  endTime: Date | null;
   expired: boolean;
 }
 
 interface GameDoc extends GameSchema, Document {}
 
 const gameSchemaFields: Record<keyof GameSchema, any> = {
-  title: {
-    type: String,
-    required: true,
-  },
   passcode: {
     type: String,
     required: true,
   },
-  players: [
-    {
-      player: {
-        type: Schema.Types.ObjectId,
-        ref: 'Player',
-      },
-      isGamemaster: {
-        type: Boolean,
-        required: true,
-      },
-      deck: {
-        type: String,
-      },
-      connected: {
-        type: Boolean,
-        required: true,
-      },
-      roundsPlayed: [
-        {
-          round: {
-            type: Schema.Types.ObjectId,
-            ref: 'Round',
-          },
-          roundNumber: {
-            type: Number,
-            required: true,
-          },
-          roundScore: {
-            type: Number,
-            required: true,
-          },
-          totalScoreToRound: {
-            type: Number,
-            required: true,
-          },
-        },
-      ],
-    },
-  ],
+  players: [playerSchema],
   maxNumberOfRounds: {
     type: Number,
     default: null,
@@ -74,18 +31,22 @@ const gameSchemaFields: Record<keyof GameSchema, any> = {
     type: Schema.Types.ObjectId,
     ref: 'Round',
   },
-  rounds: [roundSchema],
+  rounds: [roundSchema], // subdoc
   hideScores: {
     type: Boolean,
     default: false,
   },
-  startTime: {
+  dateCreated: {
     type: Date,
     default: Date.now,
   },
+  startTime: {
+    type: Date,
+    default: null,
+  },
   endTime: {
     type: Date,
-    default: Date.now,
+    default: null,
   },
   expired: {
     type: Boolean,

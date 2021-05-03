@@ -7,7 +7,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import path from 'path';
 import mongoose from 'mongoose';
-import { playerRouter } from './routes';
+import { userRouter, gameRouter, playerRouter } from './routes';
 
 const PORT = process.env.PORT;
 
@@ -29,6 +29,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/api/user', userRouter);
+app.use('/api/game', gameRouter);
 app.use('/api/player', playerRouter);
 
 // // point to static folder

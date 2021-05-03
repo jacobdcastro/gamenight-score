@@ -3,12 +3,24 @@ import { ID } from './types';
 
 export interface PlayerSchema {
   name: string;
-  username: string;
-  password: string;
+  userId: ID | string | null;
+  avatar: {
+    color: string;
+    icon: string;
+  };
+  isGamemaster: boolean;
   gmCreated: boolean;
-  color: string;
-  icon: string;
-  gamesPlayed: ID[];
+  deck: number;
+  connected: boolean;
+  totalScore: number;
+  roundsPlayed:
+    | {
+        round: ID;
+        roundNumber: number;
+        roundScore: number;
+        totalScoreToRound: number;
+      }[]
+    | [];
 }
 
 export interface PlayerDoc extends PlayerSchema, Document {}
@@ -16,33 +28,45 @@ export interface PlayerDoc extends PlayerSchema, Document {}
 const playerSchemaFields: Record<keyof PlayerSchema, any> = {
   name: {
     type: String,
-    required: false,
-  },
-  username: {
-    type: String,
     required: true,
-    unique: true,
   },
-  password: {
-    type: String,
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  isGamemaster: {
+    type: Boolean,
     required: true,
   },
   gmCreated: {
     type: Boolean,
     required: true,
   },
-  color: {
-    type: String,
-    required: false,
+  deck: {
+    type: Number,
   },
-  icon: {
-    type: String,
-    required: false,
+  avatar: {
+    color: {
+      type: String,
+      required: false,
+    },
+    icon: {
+      type: String,
+      required: false,
+    },
   },
-  gamesPlayed: [
+  connected: {
+    type: Boolean,
+  },
+  totalScore: {
+    type: Number,
+  },
+  roundsPlayed: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'Game',
+      round: Schema.Types.ObjectId,
+      roundNumber: { type: Number },
+      roundScore: { type: Number },
+      totalScoreToRound: { type: Number },
     },
   ],
 };

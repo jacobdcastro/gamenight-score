@@ -1,7 +1,22 @@
-import mongoose from 'mongoose';
-const { Schema, model } = mongoose;
+import { Document, Schema, model } from 'mongoose';
+import { ID } from './types';
 
-export const roundSchema = new Schema({
+export interface RoundSchema {
+  roundNumber: number;
+  startTime: Date | null;
+  endTime: Date | null;
+  winner: ID | null;
+  playerScores: [];
+  inProgress: boolean;
+  finished: boolean;
+  allGmPlayersScoresSubmitted: boolean;
+  allScoresSubmitted: boolean;
+  newRoundReady: boolean;
+}
+
+export interface RoundDoc extends RoundSchema, Document {}
+
+const roundSchemaFields: Record<keyof RoundSchema, any> = {
   roundNumber: {
     type: Number,
     required: true,
@@ -50,8 +65,10 @@ export const roundSchema = new Schema({
     type: Boolean,
     required: true,
   },
-});
+};
 
-const Round = model('Round', roundSchema);
+export const roundSchema = new Schema(roundSchemaFields);
+
+const Round = model<RoundDoc>('Round', roundSchema);
 
 export default Round;
