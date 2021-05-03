@@ -22,17 +22,29 @@ export const validateUsernameAndPassword = [
   validateReq,
 ];
 
-export const validatePlayerIdParam = param('playerId').not().isEmpty();
+export const validateUserIdParam = param('userId').not().isEmpty();
 
 // for route /api/player/:playerId/edit
 export const validatePlayerEditFields = [
-  validatePlayerIdParam,
+  validateUserIdParam,
   body('name').optional(),
-  body('username').optional(),
-  body('password').optional().isLength({ min: 6 }),
   // TODO use regex to check for hexcode i.e. #ffffff
   body('color').optional().isLength({ min: 7, max: 7 }),
   // TODO use regex to check for image url
   body('icon').optional(),
+  validateReq,
+];
+
+// for route /api/game/create
+export const validateCreateGameFields = [
+  body('userId').optional(),
+  body('maxNumberOfRounds').isNumeric(),
+  body('hideScores').isBoolean(),
+  validateReq,
+];
+
+// for route /api/game/join
+export const validatePasscode = [
+  body('passcode').isLength({ min: 4, max: 4 }),
   validateReq,
 ];

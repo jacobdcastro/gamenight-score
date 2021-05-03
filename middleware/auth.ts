@@ -21,8 +21,37 @@ export const verifyToken: MiddlewareFn = (req, res, next) => {
   });
 };
 
-export const verifyId: MiddlewareFn = (req, res, next) => {
-  if (req?.user?.id === req?.params?.playerId) next();
+export const verifyOptionalToken: MiddlewareFn = (req, res, next) => {
+  // Get token form header
+  const token = req.header('x-auth-token');
+
+  req.user = {};
+
+  if (!token) {
+    req.user.isGuest = true;
+    next();
+  } else {
+    jwt.verify(token, config.get('jwtsecret'), (err: any, user: any) => {
+      if (err) {
+        res.status(403).json({ msg: 'Token is not valid' });
+      }
+      req.user = user;
+      next();
+    });
+  }
+};
+
+export const verifyUserId: MiddlewareFn = (req, res, next) => {
+  if (req?.user?.userId === req?.params?.userId) next();
+  else res.status(403).json({ msg: 'You cannot access this route' });
+};
+
+export const verifyPlayerGameIds: MiddlewareFn = (req, res, next) => {
+  if (
+    req?.user?.playerId === req?.params?.playerId &&
+    req?.user?.gameId === req?.params?.gameId
+  )
+    next();
   else res.status(403).json({ msg: 'You cannot access this route' });
 };
 
