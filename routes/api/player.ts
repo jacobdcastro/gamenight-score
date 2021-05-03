@@ -1,106 +1,74 @@
 import express, { Request, Response } from 'express';
-import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from 'config';
 import {
+  validatePasscode,
   validatePlayerEditFields,
-  validatePlayerIdParam,
-  validateUsernameAndPassword,
 } from '../../middleware/validator';
-import { Player } from '../../models';
-import { PlayerSchema } from '../../models/Player';
+import { Game, Player, User } from '../../models';
 import { sendServerError } from '../../utils/errors';
-import { verifyToken, verifyId } from '../../middleware/auth';
+import {
+  verifyOptionalToken,
+  verifyPlayerGameIds,
+  verifyToken,
+} from '../../middleware/auth';
+import { IVerifiedRequest } from '../../middleware/types';
 
 const playerRouter = express.Router();
 
 const secret: string = config.get('jwtsecret');
 
-// @route   POST api/player/signup
-// @desc    Create new player account
+// @route   POST api/player/join
+// @desc    Join created game
 // access   Public
 playerRouter.post(
-  '/signup',
-  validateUsernameAndPassword,
-  async (req: Request, res: Response) => {
-    const { username, password } = req.body;
-
-    // check if username is taken
-    const playerWithSameUsername = await Player.findOne({ username });
-    if (playerWithSameUsername) {
-      return res.status(400).json({ errors: [{ msg: 'Username taken' }] });
-    }
-
-    const playerData: PlayerSchema = {
-      name: '',
-      username,
-      password,
-      gmCreated: false,
-      color: '',
-      icon: '',
-      gamesPlayed: [],
-    };
+  '/join',
+  validatePasscode,
+  verifyOptionalToken,
+  async (req: IVerifiedRequest, res: Response) => {
+    const { passcode } = req.body;
+    const userId =
+      !req.user || req.user.isGuest
+        ? null
+        : req.user.userId
+        ? req.user.userId.toString()
+        : null;
 
     try {
-      // hash password asyncronously
-      const hash = await bcrypt.hash(password, 14);
-      playerData.password = hash;
+      const game = await Game.findOne({ passcode });
 
-      // create and save new player in DB
-      const player = new Player(playerData);
-      await player.save();
+      const player = new Player({
+        userId,
+        name: 'name',
+        isGamemaster: false,
+        gmCreated: false,
+        deck: 0,
+        connected: true,
+        totalScore: 0,
+        roundsPlayed: [],
+      });
 
-      // create and send token
-      jwt.sign(
-        { id: player.id },
-        secret,
-        { algorithm: 'HS256', expiresIn: 60 * 60 * 6 },
-        (err, token) => {
-          if (err) sendServerError(res, err);
-          else res.json({ token, player });
+      if (game) {
+        // add game ID to user.gamesPlayed[] if user exists
+        if (userId) {
+          const user = await User.findById(userId);
+          user?.gamesPlayed.push(game.id);
         }
-      );
-    } catch (err) {
-      sendServerError(res, err);
-    }
-  }
-);
 
-// @route   POST api/player/signup
-// @desc    Login to player account
-// access   Public
-playerRouter.post(
-  '/login',
-  validateUsernameAndPassword,
-  async (req: Request, res: Response) => {
-    try {
-      // find player document
-      const player = await Player.findOne({ username: req.body.username });
+        // add created player to game.players[]
+        game.players.push(player);
+        game.save();
 
-      // if player doesn't exist, send error, prompt sign up
-      if (!player) {
-        res
-          .status(400)
-          .send("Username doesn't exist, would you like to sign up?");
-      } else {
-        // check if password in body matches password in DB
-        const isMatch = await bcrypt.compare(
-          req.body.password,
-          player.password
+        // create and send game token
+        jwt.sign(
+          { playerId: player.id, isGamemaster: false, gameId: game.id, userId },
+          secret,
+          { algorithm: 'HS256', expiresIn: 60 * 60 * 6 },
+          (err, token) => {
+            if (err) sendServerError(res, err);
+            else res.json({ token, gameId: game.id, playerId: player.id });
+          }
         );
-        if (isMatch) {
-          jwt.sign(
-            { id: player.id },
-            secret,
-            { algorithm: 'HS256', expiresIn: 60 * 60 * 6 },
-            (err, token) => {
-              if (err) sendServerError(res, err);
-              else res.json({ token, player });
-            }
-          );
-        } else {
-          res.status(400).send('Incorrect password');
-        }
       }
     } catch (err) {
       sendServerError(res, err);
@@ -108,34 +76,26 @@ playerRouter.post(
   }
 );
 
-// @route   GET api/player/:playerId
-// @desc    Get player data by ID
-// access   Public
-playerRouter.get(
-  '/:playerId',
-  validatePlayerIdParam,
-  async (req: Request, res: Response) => {
-    try {
-      const player = await Player.findById(req.params.playerId);
-      res.json(player);
-    } catch (err) {
-      sendServerError(res, err);
-    }
-  }
-);
-
-// @route   PUT api/player/:playerId/edit
-// @desc    Edit player data by ID
-// access   Private
-playerRouter.put(
-  '/:playerId/edit',
+// player edit fields
+playerRouter.post(
+  '/:playerId/edit/game/:gameId',
   verifyToken,
-  verifyId,
+  verifyPlayerGameIds,
   validatePlayerEditFields,
   async (req: Request, res: Response) => {
+    const { playerId, gameId } = req.params;
     try {
+      const game = await Game.findOne({ _id: gameId });
+
+      // TODO ===================================
+      // TODO ===================================
+      // TODO figure out typing for finding subdoc by ID
+      // TODO ===================================
+      // TODO ===================================
+      // const player = await game.players;
+
       const result = await Player.updateOne(
-        { _id: req.params.playerId },
+        { _id: req.params.userId },
         { ...req.body }
       );
       res.json(result);
@@ -145,17 +105,8 @@ playerRouter.put(
   }
 );
 
-// !! TEMPORARY WILL COMMENT OUT SOON !!
-// !! @route   DELETE api/player/delete-all
-// !! @desc    Delete all player documents
-// !! access   Public
-playerRouter.delete('/delete-all', async (req: Request, res: Response) => {
-  try {
-    await Player.deleteMany();
-    res.status(200);
-  } catch (err) {
-    sendServerError(res, err);
-  }
-});
+// player post score
+
+// player leave game
 
 export default playerRouter;
