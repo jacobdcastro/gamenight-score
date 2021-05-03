@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/jacobdcastro/gamenight-score#readme",
   "dependencies": {
+    "@google-cloud/firestore": "^4.10.1",
     "bcrypt": "^5.0.1",
     "config": "^3.3.6",
     "cors": "^2.8.5",

@@ -6,5 +6,13 @@
     "outDir": "./build",
     "esModuleInterop": true,
     "strict": true
-  }
+  },
+  "include": [
+    "routes/**/*",
+    "utils/**/*",
+    "models/**/*",
+    "middleware/**/*",
+    "config/**/*",
+    "index.ts"
+  ]
 }
