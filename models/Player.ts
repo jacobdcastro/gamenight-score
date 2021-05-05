@@ -16,7 +16,7 @@ export interface PlayerSchema {
   roundsPlayed:
     | {
         round: ID;
-        roundNumber: number;
+        roundNum: number;
         roundScore: number;
         totalScoreToRound: number;
       }[]
@@ -64,7 +64,7 @@ const playerSchemaFields: Record<keyof PlayerSchema, any> = {
   roundsPlayed: [
     {
       round: Schema.Types.ObjectId,
-      roundNumber: { type: Number },
+      roundNum: { type: Number },
       roundScore: { type: Number },
       totalScoreToRound: { type: Number },
     },

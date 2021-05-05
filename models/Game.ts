@@ -6,7 +6,7 @@ export interface GameSchema {
   passcode: string;
   players: Types.DocumentArray<PlayerDoc>;
   maxNumberOfRounds: number;
-  currentRound: any;
+  currentRoundNum: number;
   rounds: Types.DocumentArray<RoundDoc>;
   hideScores: boolean;
   dateCreated: Date;
@@ -27,9 +27,9 @@ const gameSchemaFields: Record<keyof GameSchema, any> = {
     type: Number,
     default: null,
   },
-  currentRound: {
-    type: Types.ObjectId,
-    ref: 'Round',
+  currentRoundNum: {
+    type: Number,
+    default: 1,
   },
   rounds: [roundSchema], // subdoc
   hideScores: {
