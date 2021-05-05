@@ -23,10 +23,11 @@ export const validateUsernameAndPassword = [
 ];
 
 export const validateUserIdParam = param('userId').not().isEmpty();
+export const validatePlayerIdParam = param('playerId').not().isEmpty();
 
 // for route /api/player/:playerId/edit
 export const validatePlayerEditFields = [
-  validateUserIdParam,
+  validatePlayerIdParam,
   body('name').optional(),
   // TODO use regex to check for hexcode i.e. #ffffff
   body('color').optional().isLength({ min: 7, max: 7 }),
