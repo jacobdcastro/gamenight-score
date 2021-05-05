@@ -28,7 +28,7 @@ gameRouter.post(
         passcode: generatePasscode(),
         players: [],
         maxNumberOfRounds,
-        currentRound: '',
+        currentRoundNum: 1,
         rounds: [],
         hideScores,
         dateCreated: new Date(),
@@ -67,7 +67,7 @@ gameRouter.post(
         roundsPlayed: [],
       });
 
-      game.currentRound = game.rounds[0].id; // set first round as 'current round'
+      game.currentRoundNum = game.rounds[0].id; // set first round as 'current round'
 
       // create and save game creator as Gamemaster
       await game.save(); // save all changes

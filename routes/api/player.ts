@@ -114,6 +114,8 @@ playerRouter.put(
   }
 );
 
+// gamemaster create player
+
 // player post score
 
 // player leave game
