@@ -24,6 +24,7 @@ export const validateUsernameAndPassword = [
 
 export const validateUserIdParam = param('userId').not().isEmpty();
 export const validatePlayerIdParam = param('playerId').not().isEmpty();
+export const validateGameIdParam = param('gameId').not().isEmpty();
 
 // for route /api/player/:playerId/edit
 export const validatePlayerEditFields = [
@@ -47,5 +48,18 @@ export const validateCreateGameFields = [
 // for route /api/game/join
 export const validatePasscode = [
   body('passcode').isLength({ min: 4, max: 4 }),
+  validateReq,
+];
+
+// for route api/round/winner/:gameId
+export const validateRoundWinner = [
+  body('winnerPlayerId').isString(),
+  validateReq,
+];
+
+// for route api/round/score/:playerId/:gameId
+export const validateRoundScoreSubmission = [
+  body('score').isNumeric(),
+  body('roundNum').isNumeric(),
   validateReq,
 ];

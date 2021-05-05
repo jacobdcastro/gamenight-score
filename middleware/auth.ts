@@ -46,6 +46,11 @@ export const verifyUserId: MiddlewareFn = (req, res, next) => {
   else res.status(403).json({ msg: 'You cannot access this route' });
 };
 
+export const verifyGameId: MiddlewareFn = (req, res, next) => {
+  if (req?.user?.gameId === req?.params?.gameId) next();
+  else res.status(403).json({ msg: 'You cannot access this route' });
+};
+
 export const verifyPlayerGameIds: MiddlewareFn = (req, res, next) => {
   if (
     req?.user?.playerId === req?.params?.playerId &&
@@ -56,5 +61,10 @@ export const verifyPlayerGameIds: MiddlewareFn = (req, res, next) => {
 };
 
 export const verifyGamemaster: MiddlewareFn = (req, res, next) => {
-  // TODO check if { gamemaster: true }
+  if (req?.user?.isGamemaster === true) next();
+  else
+    res.status(403).json({
+      msg:
+        'You cannot access this route as you are not the established Gamemaster.',
+    });
 };
