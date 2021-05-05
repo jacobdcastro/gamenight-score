@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import config from 'config';
 import { Game, Player, Round } from '../../models';
-import { GameSchema } from '../../models/Game';
+import { GameDoc } from '../../models/Game';
 import { sendServerError } from '../../utils/errors';
 import generatePasscode from '../../utils/passcode';
 import { validateCreateGameFields } from '../../middleware/validator';
@@ -14,31 +14,31 @@ const gameRouter = express.Router();
 const secret: string = config.get('jwtsecret');
 
 // @route   POST api/game/create
-// @desc    Create new game (with token)
+// @desc    Create new game
 // access   Private
 gameRouter.post(
   '/create',
   verifyOptionalToken,
   validateCreateGameFields,
   async (req: IVerifiedRequest, res: Response) => {
-    const { userId, maxNumberOfRounds, hideScores } = req.body;
-
-    const gameData: GameSchema = {
-      passcode: generatePasscode(),
-      players: [],
-      maxNumberOfRounds,
-      currentRound: '',
-      rounds: [],
-      hideScores,
-      dateCreated: new Date(),
-      startTime: null,
-      endTime: null,
-      expired: false,
-    };
+    const { maxNumberOfRounds, hideScores } = req.body;
 
     try {
-      // initial round 1 data
-      const round = new Round({
+      const game = new Game({
+        passcode: generatePasscode(),
+        players: [],
+        maxNumberOfRounds,
+        currentRound: '',
+        rounds: [],
+        hideScores,
+        dateCreated: new Date(),
+        startTime: null,
+        endTime: null,
+        expired: false,
+      });
+
+      // add first round to rounds[]
+      game.rounds.push({
         roundNumber: 1,
         startTime: null,
         endTime: null,
@@ -51,31 +51,32 @@ gameRouter.post(
         newRoundReady: false,
       });
 
-      // player document for gamemaster
-      const player = new Player({
-        userId: userId || null,
+      // add gamemaster to players[]
+      game.players.push({
         name: 'name',
-        gmCreated: false,
+        userId: req?.user?.userId || null,
+        avatar: {
+          color: '#ffffff',
+          icon: 'https://google.com/img-123123123',
+        },
         isGamemaster: true,
+        gmCreated: false,
         deck: 0,
         connected: true,
         totalScore: 0,
         roundsPlayed: [],
       });
 
-      gameData.rounds.push(round); // add first round to rounds[]
-      gameData.players.push(player); // add gamemaster to players[]
-      gameData.currentRound = round.id; // set first round as 'current round'
+      game.currentRound = game.rounds[0].id; // set first round as 'current round'
 
       // create and save game creator as Gamemaster
-      const game = new Game(gameData);
       await game.save(); // save all changes
 
       // create and send game token
       jwt.sign(
         {
-          userId: userId || null,
-          playerId: player.id,
+          userId: req?.user?.userId || null,
+          playerId: game.players[0].id,
           isGamemaster: true,
           gameId: game.id,
         },
@@ -83,7 +84,8 @@ gameRouter.post(
         { algorithm: 'HS256', expiresIn: 60 * 60 * 6 },
         (err, token) => {
           if (err) sendServerError(res, err);
-          else res.json({ token, gameId: game.id });
+          else
+            res.json({ token, gameId: game.id, playerId: game.players[0].id });
         }
       );
     } catch (err) {

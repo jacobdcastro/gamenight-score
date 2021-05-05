@@ -41,6 +41,10 @@ playerRouter.post(
         userId,
         name: 'name',
         isGamemaster: false,
+        avatar: {
+          color: '#ffffff',
+          icon: 'https://google.com/img-123123123',
+        },
         gmCreated: false,
         deck: 0,
         connected: true,
@@ -77,28 +81,31 @@ playerRouter.post(
 );
 
 // player edit fields
-playerRouter.post(
+playerRouter.put(
   '/:playerId/edit/game/:gameId',
   verifyToken,
   verifyPlayerGameIds,
   validatePlayerEditFields,
-  async (req: Request, res: Response) => {
+  async (req: IVerifiedRequest, res: Response) => {
     const { playerId, gameId } = req.params;
+    const { name, color, icon } = req.body;
+
     try {
-      const game = await Game.findOne({ _id: gameId });
+      const game = await Game.findById(gameId); // find game
 
-      // TODO ===================================
-      // TODO ===================================
-      // TODO figure out typing for finding subdoc by ID
-      // TODO ===================================
-      // TODO ===================================
-      // const player = await game.players;
+      if (game) {
+        const player = game.players.id(playerId); // find player
 
-      const result = await Player.updateOne(
-        { _id: req.params.userId },
-        { ...req.body }
-      );
-      res.json(result);
+        // change player fields
+        if (player) {
+          if (name) player.name = name;
+          if (color) player.avatar.color = color;
+          if (icon) player.avatar.icon = icon;
+        }
+
+        game?.save(); // save changes
+        res.json({ player: game.players.id(playerId), gameId: game.id });
+      }
     } catch (err) {
       sendServerError(res, err);
     }
