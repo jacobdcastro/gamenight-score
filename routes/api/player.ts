@@ -80,7 +80,9 @@ playerRouter.post(
   }
 );
 
-// player edit fields
+// @route   POST api/:playerId/edit/game/:gameId
+// @desc    Edit in-game player fields
+// access   Private (in-game player)
 playerRouter.put(
   '/:playerId/edit/game/:gameId',
   verifyToken,
