@@ -1,4 +1,4 @@
-import { Document, Schema, model } from 'mongoose';
+import { Document, Schema, model, Types } from 'mongoose';
 import { ID } from './types';
 
 export interface PlayerSchema {
@@ -23,7 +23,7 @@ export interface PlayerSchema {
     | [];
 }
 
-export interface PlayerDoc extends PlayerSchema, Document {}
+export interface PlayerDoc extends PlayerSchema, Types.Subdocument {}
 
 const playerSchemaFields: Record<keyof PlayerSchema, any> = {
   name: {

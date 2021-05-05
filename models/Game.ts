@@ -1,13 +1,13 @@
-import { Document, Schema, model } from 'mongoose';
+import { Document, Schema, model, Types } from 'mongoose';
 import { PlayerDoc, playerSchema } from './Player';
-import { RoundDoc, RoundSchema, roundSchema } from './Round';
+import { RoundDoc, roundSchema } from './Round';
 
 export interface GameSchema {
   passcode: string;
-  players: PlayerDoc[];
+  players: Types.DocumentArray<PlayerDoc>;
   maxNumberOfRounds: number;
   currentRound: any;
-  rounds: RoundDoc[];
+  rounds: Types.DocumentArray<RoundDoc>;
   hideScores: boolean;
   dateCreated: Date;
   startTime: Date | null;
@@ -15,7 +15,7 @@ export interface GameSchema {
   expired: boolean;
 }
 
-interface GameDoc extends GameSchema, Document {}
+export interface GameDoc extends GameSchema, Document {}
 
 const gameSchemaFields: Record<keyof GameSchema, any> = {
   passcode: {
@@ -28,7 +28,7 @@ const gameSchemaFields: Record<keyof GameSchema, any> = {
     default: null,
   },
   currentRound: {
-    type: Schema.Types.ObjectId,
+    type: Types.ObjectId,
     ref: 'Round',
   },
   rounds: [roundSchema], // subdoc
