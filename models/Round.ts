@@ -1,4 +1,5 @@
 import { Document, Schema, model } from 'mongoose';
+import { PlayerScoreSchema, playerScoreSchema } from './PlayerScore';
 import { ID } from './types';
 
 export interface RoundSchema {
@@ -6,7 +7,7 @@ export interface RoundSchema {
   startTime: Date | null;
   endTime: Date | null;
   winner: ID | null;
-  playerScores: [];
+  playerScores: PlayerScoreSchema[] | [];
   inProgress: boolean;
   finished: boolean;
   allGmPlayersScoresSubmitted: boolean;
@@ -33,18 +34,7 @@ const roundSchemaFields: Record<keyof RoundSchema, any> = {
     type: Schema.Types.ObjectId,
     ref: 'Player',
   },
-  playerScores: [
-    {
-      player: {
-        type: Schema.Types.ObjectId,
-        ref: 'Player',
-      },
-      roundScore: {
-        type: Number,
-        required: true,
-      },
-    },
-  ],
+  playerScores: [playerScoreSchema],
   inProgress: {
     type: Boolean,
     required: true,

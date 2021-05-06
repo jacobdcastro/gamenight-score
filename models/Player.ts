@@ -1,4 +1,5 @@
-import { Document, Schema, model, Types } from 'mongoose';
+import { Schema, model, Types } from 'mongoose';
+import { RoundPlayedSchema, roundPlayedSchema } from './RoundPlayed';
 import { ID } from './types';
 
 export interface PlayerSchema {
@@ -13,14 +14,7 @@ export interface PlayerSchema {
   deck: number;
   connected: boolean;
   totalScore: number;
-  roundsPlayed:
-    | {
-        round: ID;
-        roundNum: number;
-        roundScore: number;
-        totalScoreToRound: number;
-      }[]
-    | [];
+  roundsPlayed: RoundPlayedSchema[] | [];
 }
 
 export interface PlayerDoc extends PlayerSchema, Types.Subdocument {}
@@ -61,14 +55,7 @@ const playerSchemaFields: Record<keyof PlayerSchema, any> = {
   totalScore: {
     type: Number,
   },
-  roundsPlayed: [
-    {
-      round: Schema.Types.ObjectId,
-      roundNum: { type: Number },
-      roundScore: { type: Number },
-      totalScoreToRound: { type: Number },
-    },
-  ],
+  roundsPlayed: [roundPlayedSchema],
 };
 
 export const playerSchema = new Schema(playerSchemaFields);
