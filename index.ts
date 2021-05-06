@@ -7,7 +7,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import path from 'path';
 import mongoose from 'mongoose';
-import { userRouter, gameRouter, playerRouter } from './routes';
+import { userRouter, gameRouter, playerRouter, roundRouter } from './routes';
 
 const PORT = process.env.PORT;
 
@@ -32,6 +32,7 @@ app.use((req, res, next) => {
 app.use('/api/user', userRouter);
 app.use('/api/game', gameRouter);
 app.use('/api/player', playerRouter);
+app.use('/api/round', roundRouter);
 
 // // point to static folder
 // app.use(express.static(path.join(__dirname, 'client', 'build')));
