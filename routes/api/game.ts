@@ -67,7 +67,7 @@ gameRouter.post(
         roundsPlayed: [],
       });
 
-      game.currentRoundNum = game.rounds[0].id; // set first round as 'current round'
+      game.currentRoundNum = game.rounds[0].roundNumber; // set first round as 'current round'
 
       // create and save game creator as Gamemaster
       await game.save(); // save all changes
