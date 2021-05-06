@@ -3,6 +3,7 @@ import { MiddlewareFn } from './types';
 
 export const validateReq: MiddlewareFn = (req, res, next) => {
   const errors = validationResult(req);
+  console.log({ errors });
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   } else {
@@ -15,16 +16,20 @@ export const validateReq: MiddlewareFn = (req, res, next) => {
 //   /api/player/login
 export const validateUsernameAndPassword = [
   body('username', 'Username is required').not().isEmpty(),
-  body(
-    'password',
-    'Please enter a password with 6 or more characters'
-  ).isLength({ min: 6 }),
+  body('password', 'Please enter a password with 6 or more characters')
+    .isLength({ min: 6 })
+    .exists(),
   validateReq,
 ];
 
-export const validateUserIdParam = param('userId').not().isEmpty();
-export const validatePlayerIdParam = param('playerId').not().isEmpty();
-export const validateGameIdParam = param('gameId').not().isEmpty();
+export const validateUserIdParam = param('userId').exists();
+export const validatePlayerIdParam = param('playerId').exists();
+export const validateGameIdParam = param('gameId').exists();
+export const validateGamePlayerIdParams = [
+  validatePlayerIdParam,
+  validateGameIdParam,
+  validateReq,
+];
 
 // for route /api/player/:playerId/edit
 export const validatePlayerEditFields = [
@@ -39,27 +44,26 @@ export const validatePlayerEditFields = [
 
 // for route /api/game/create
 export const validateCreateGameFields = [
-  body('userId').optional(),
-  body('maxNumberOfRounds').isNumeric(),
-  body('hideScores').isBoolean(),
+  body('maxNumberOfRounds').isNumeric().exists(),
+  body('hideScores').isBoolean().exists(),
   validateReq,
 ];
 
 // for route /api/game/join
 export const validatePasscode = [
-  body('passcode').isLength({ min: 4, max: 4 }),
+  body('passcode').isLength({ min: 4, max: 4 }).exists(),
   validateReq,
 ];
 
 // for route api/round/winner/:gameId
 export const validateRoundWinner = [
-  body('winnerPlayerId').isString(),
+  body('winnerPlayerId').isString().exists(),
   validateReq,
 ];
 
 // for route api/round/score/:playerId/:gameId
 export const validateRoundScoreSubmission = [
-  body('score').isNumeric(),
-  body('roundNum').isNumeric(),
+  body('score').isNumeric().exists(),
+  body('roundNum').isNumeric().exists(),
   validateReq,
 ];
