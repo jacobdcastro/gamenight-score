@@ -5,6 +5,7 @@ import { ID } from './types';
 export interface PlayerSchema {
   name: string;
   userId: ID | string | null;
+  status: string;
   avatar: {
     color: string;
     icon: string;
@@ -27,6 +28,9 @@ const playerSchemaFields: Record<keyof PlayerSchema, any> = {
   userId: {
     type: Schema.Types.ObjectId,
     ref: 'User',
+  },
+  status: {
+    type: String,
   },
   isGamemaster: {
     type: Boolean,

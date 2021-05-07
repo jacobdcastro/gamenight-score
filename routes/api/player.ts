@@ -41,6 +41,7 @@ playerRouter.post(
         userId,
         name: 'name',
         isGamemaster: false,
+        status: '',
         avatar: {
           color: '#ffffff',
           icon: 'https://google.com/img-123123123',

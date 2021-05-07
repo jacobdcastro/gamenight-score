@@ -55,6 +55,7 @@ gameRouter.post(
       game.players.push({
         name: 'name',
         userId: req?.user?.userId || null,
+        status: '',
         avatar: {
           color: '#ffffff',
           icon: 'https://google.com/img-123123123',
