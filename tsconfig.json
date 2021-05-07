@@ -5,7 +5,7 @@
     "rootDir": "./",
     "outDir": "./build",
     "esModuleInterop": true,
-    "strict": true
+    "strict": false
   },
   "include": [
     "routes/**/*",
@@ -14,5 +14,6 @@
     "middleware/**/*",
     "config/**/*",
     "index.ts"
-  ]
+  ],
+  "exclude": ["./node_modules", "./client"]
 }
