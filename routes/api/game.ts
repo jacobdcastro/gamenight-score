@@ -95,8 +95,6 @@ gameRouter.post(
   }
 );
 
-// player leave game
-
 // end game (gamemaster)
 
 // restart game
