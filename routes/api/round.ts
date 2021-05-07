@@ -15,12 +15,6 @@ import { Game, RoundPlayed } from '../../models';
 
 const roundRouter = express.Router();
 
-// TODO ===============================
-// TODO ===============================
-// todo test ALL /api/round endpoints!!
-// TODO ===============================
-// TODO ===============================
-
 // @route   POST api/round/start/:gameId
 // @desc    Start current round of play
 // access   Private (gamemaster)
@@ -43,7 +37,7 @@ roundRouter.post(
         const currentRound = game.rounds[game.currentRoundNum - 1];
         currentRound.startTime = now;
         currentRound.inProgress = true;
-        game.save();
+        await game.save();
       }
       res.status(200).send(`Round ${game?.currentRoundNum} started!`);
     } catch (err) {
@@ -80,7 +74,7 @@ roundRouter.post(
         if (!game.players.some((p) => p.gmCreated))
           currentRound.allGmPlayersScoresSubmitted = true;
 
-        game.save();
+        await game.save();
       }
       res.status(200).send(`Round ${game?.currentRoundNum} ended!`);
     } catch (err) {
@@ -108,7 +102,7 @@ roundRouter.post(
         // set end time if last round has ended
         const currentRound = game.rounds[game.currentRoundNum - 1];
         currentRound.winner = winnerPlayerId;
-        game.save();
+        await game.save();
       }
 
       res
@@ -123,7 +117,7 @@ roundRouter.post(
 );
 
 // @route   POST api/round/score/:playerId/:gameId
-// @desc    Player post round score
+// @desc    Player submit round score
 // access   Private (in-game player)
 roundRouter.post(
   '/score/:playerId/:gameId',
@@ -145,6 +139,7 @@ roundRouter.post(
           const _roundsPlayed = [...player.roundsPlayed];
           const totalScoreToRound =
             _roundsPlayed.reduce((n, r) => n + r.roundScore, 0) + score;
+
           _roundsPlayed.push({
             round: round.id,
             roundNum: roundNum,
@@ -157,8 +152,18 @@ roundRouter.post(
           const _playerScores = [...round.playerScores];
           _playerScores.push({ player: playerId, roundScore: score });
           round.playerScores = _playerScores;
+
+          // set player.totalScore
+          player.totalScore = totalScoreToRound;
+
+          // if everyone has submitted scores, set true
+          if (game.players.length === round.playerScores.length) {
+            round.allScoresSubmitted = true;
+            if (round.winner) round.newRoundReady = true;
+          }
         }
-        game.save();
+
+        await game.save(); // save all
       }
 
       res.status(200).send(`Your score has been saved!`);
@@ -168,6 +173,45 @@ roundRouter.post(
   }
 );
 
-// next round (automatic), same as start round?
+// @route   POST api/round/next/:gameId
+// @desc    Proceed to next round
+// access   Private (gamemaster)
+roundRouter.post(
+  '/next/:gameId',
+  validateGameIdParam,
+  verifyToken,
+  verifyGamemaster,
+  async (req: IVerifiedRequest, res: Response) => {
+    const { gameId } = req.params;
+    try {
+      const game = await Game.findById(gameId);
+      const prevRound = game.rounds[game.currentRoundNum - 1];
+
+      if (prevRound.newRoundReady) {
+        const newRoundNum = game.currentRoundNum + 1;
+
+        game.rounds.push({
+          roundNumber: newRoundNum,
+          startTime: null,
+          endTime: null,
+          winner: null,
+          playerScores: [],
+          inProgress: false,
+          finished: false,
+          allGmPlayersScoresSubmitted: false,
+          allScoresSubmitted: false,
+          newRoundReady: false,
+        });
+        game.currentRoundNum = newRoundNum;
+        await game.save();
+        res.status(200).send(`Round ${newRoundNum} successfully created!`);
+      } else {
+        res.status(400).send(`Current Round isn't ready to proceed yet.`);
+      }
+    } catch (err) {
+      sendServerError(res, err);
+    }
+  }
+);
 
 export default roundRouter;

@@ -70,7 +70,7 @@ gameRouter.post(
       game.currentRoundNum = game.rounds[0].roundNumber; // set first round as 'current round'
 
       // create and save game creator as Gamemaster
-      await game.save(); // save all changes
+      await await game.save(); // save all changes
 
       // create and send game token
       jwt.sign(

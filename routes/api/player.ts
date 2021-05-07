@@ -61,7 +61,7 @@ playerRouter.post(
 
         // add created player to game.players[]
         game.players.push(player);
-        game.save();
+        await game.save();
 
         // create and send game token
         jwt.sign(
@@ -79,6 +79,8 @@ playerRouter.post(
     }
   }
 );
+
+// ? player re-join game??
 
 // @route   POST api/:playerId/edit/game/:gameId
 // @desc    Edit in-game player fields
