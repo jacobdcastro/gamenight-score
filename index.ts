@@ -5,7 +5,6 @@ import express from 'express';
 import connectDB from './config/db';
 import cors from 'cors';
 import helmet from 'helmet';
-import path from 'path';
 import mongoose from 'mongoose';
 import { userRouter, gameRouter, playerRouter, roundRouter } from './routes';
 
