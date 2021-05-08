@@ -2,17 +2,28 @@ import express, { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import config from 'config';
 import {
+  validateGameIdParam,
+  validateGamePlayerIdParams,
   validatePasscode,
   validatePlayerEditFields,
 } from '../../middleware/validator';
 import { Game, Player, User } from '../../models';
 import { sendServerError } from '../../utils/errors';
 import {
+  verifyGameId,
+  verifyGamemaster,
   verifyOptionalToken,
   verifyPlayerGameIds,
   verifyToken,
+  verifyUserId,
 } from '../../middleware/auth';
 import { IVerifiedRequest } from '../../middleware/types';
+import { getGameById } from '../../middleware/getGame';
+import {
+  correctPlayerRoundsPlayed,
+  orderPlayersByScore,
+} from '../../utils/corrections';
+import { PlayerScoreDoc } from '../../models/PlayerScore';
 
 const playerRouter = express.Router();
 
@@ -108,7 +119,7 @@ playerRouter.put(
           if (icon) player.avatar.icon = icon;
         }
 
-        game?.save(); // save changes
+        await game.save(); // save changes
         res.json({ player: game.players.id(playerId), gameId: game.id });
       }
     } catch (err) {
@@ -118,6 +129,45 @@ playerRouter.put(
 );
 
 // add gmCreated player
+
+// TODO ====================
+// todo TEST AFTER UI
+// TODO ====================
+// @route   PUT api/player/correct/:gameId
+// @desc    Edit any player score from any round
+// access   Private (gamemaster)
+playerRouter.put(
+  '/correct/:gameId',
+  validateGameIdParam,
+  verifyToken,
+  verifyGameId,
+  verifyGamemaster,
+  getGameById,
+  async (req: IVerifiedRequest, res: Response) => {
+    const { score, roundNum, playerId } = req.body;
+    const { game } = req;
+
+    try {
+      // save score in RoundDoc
+      const roundDoc = game.rounds[roundNum - 1];
+      const playerScoreInRound = roundDoc.playerScores.find(
+        (p: PlayerScoreDoc) => p.player === playerId
+      );
+      playerScoreInRound.roundScore = score;
+
+      // save score in PlayerDoc
+      const player = game.players.find((p) => p.id === playerId);
+      player.roundsPlayed[roundNum - 1].roundScore = score;
+
+      // correct totalScore and totalScoreToRounds
+      await orderPlayersByScore(
+        correctPlayerRoundsPlayed(game, playerId)
+      ).save();
+    } catch (err) {
+      sendServerError(res, err);
+    }
+  }
+);
 
 // player leave game
 
