@@ -1,10 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-
-export type MiddlewareFn = (
-  req: Request | any,
-  res: Response,
-  next: NextFunction
-) => void;
+import { GameDoc } from '../models/Game';
 
 export interface IVerifiedRequest extends Request {
   user?: {
@@ -14,4 +9,17 @@ export interface IVerifiedRequest extends Request {
     gameId?: string;
     isGamemaster?: boolean;
   };
+  game?: GameDoc;
 }
+
+export type MiddlewareFn = (
+  req: Request | any,
+  res: Response,
+  next: NextFunction
+) => void;
+
+export type VerifiedMiddlewareFn = (
+  req: IVerifiedRequest,
+  res: Response,
+  next: NextFunction
+) => void;

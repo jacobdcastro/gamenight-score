@@ -12,6 +12,7 @@ import {
 } from '../../middleware/validator';
 import { sendServerError } from '../../utils/errors';
 import { Game, RoundPlayed } from '../../models';
+import { getGameById } from '../../middleware/getGame';
 
 const roundRouter = express.Router();
 
@@ -24,21 +25,23 @@ roundRouter.post(
   validateGameIdParam,
   verifyGameId,
   verifyGamemaster,
+  getGameById,
   async (req: IVerifiedRequest, res: Response) => {
     const { gameId } = req.params;
-    const now = new Date();
-    try {
-      const game = await Game.findById(gameId); // find game
-      if (game) {
-        // set start time if first round has begun
-        if (game.currentRoundNum === 1) game.startTime = now;
+    const { game } = req;
 
-        // set current round state to 'in progress'
-        const currentRound = game.rounds[game.currentRoundNum - 1];
-        currentRound.startTime = now;
-        currentRound.inProgress = true;
-        await game.save();
-      }
+    const now = new Date();
+
+    try {
+      // set start time if first round has begun
+      if (game.currentRoundNum === 1) game.startTime = now;
+
+      // set current round state to 'in progress'
+      const currentRound = game.rounds[game.currentRoundNum - 1];
+      currentRound.startTime = now;
+      currentRound.inProgress = true;
+      await game.save();
+
       res.status(200).send(`Round ${game?.currentRoundNum} started!`);
     } catch (err) {
       sendServerError(res, err);
@@ -55,27 +58,29 @@ roundRouter.post(
   validateGameIdParam,
   verifyGameId,
   verifyGamemaster,
+  getGameById,
   async (req: IVerifiedRequest, res: Response) => {
     const { gameId } = req.params;
+    const { game } = req;
+
     const now = new Date();
+
     try {
-      const game = await Game.findById(gameId); // find game
-      if (game) {
-        // set end time if last round has ended
-        if (game.currentRoundNum >= game.maxNumberOfRounds) game.endTime = now;
+      // set end time if last round has ended
+      if (game.currentRoundNum >= game.maxNumberOfRounds) game.endTime = now;
 
-        // set current round state to 'finished'
-        const currentRound = game.rounds[game.currentRoundNum - 1];
-        currentRound.endTime = now;
-        currentRound.inProgress = false;
-        currentRound.finished = true;
+      // set current round state to 'finished'
+      const currentRound = game.rounds[game.currentRoundNum - 1];
+      currentRound.endTime = now;
+      currentRound.inProgress = false;
+      currentRound.finished = true;
 
-        // if no gmCreated players, mark as 'true'
-        if (!game.players.some((p) => p.gmCreated))
-          currentRound.allGmPlayersScoresSubmitted = true;
+      // if no gmCreated players, mark as 'true'
+      if (!game.players.some((p) => p.gmCreated))
+        currentRound.allGmPlayersScoresSubmitted = true;
 
-        await game.save();
-      }
+      await game.save();
+
       res.status(200).send(`Round ${game?.currentRoundNum} ended!`);
     } catch (err) {
       sendServerError(res, err);
@@ -92,18 +97,17 @@ roundRouter.post(
   validateGameIdParam,
   verifyGameId,
   verifyGamemaster,
+  getGameById,
   async (req: IVerifiedRequest, res: Response) => {
     const { gameId } = req.params;
     const { winnerPlayerId } = req.body;
+    const { game } = req;
 
     try {
-      const game = await Game.findById(gameId); // find game
-      if (game) {
-        // set end time if last round has ended
-        const currentRound = game.rounds[game.currentRoundNum - 1];
-        currentRound.winner = winnerPlayerId;
-        await game.save();
-      }
+      // set end time if last round has ended
+      const currentRound = game.rounds[game.currentRoundNum - 1];
+      currentRound.winner = winnerPlayerId;
+      await game.save();
 
       res
         .status(200)
@@ -124,47 +128,46 @@ roundRouter.post(
   verifyToken,
   validateGamePlayerIdParams,
   verifyPlayerGameIds,
+  getGameById,
   async (req: IVerifiedRequest, res: Response) => {
     const { gameId, playerId } = req.params;
     const { score, roundNum } = req.body;
+    const { game } = req;
 
     try {
-      const game = await Game.findById(gameId); // find game
-      if (game) {
-        const round = game.rounds[game.currentRoundNum - 1];
-        const player = game.players.id(playerId);
+      const round = game.rounds[game.currentRoundNum - 1];
+      const player = game.players.id(playerId);
 
-        if (round && player) {
-          // add score to player.roundsPlayed[]
-          const _roundsPlayed = [...player.roundsPlayed];
-          const totalScoreToRound =
-            _roundsPlayed.reduce((n, r) => n + r.roundScore, 0) + score;
+      if (round && player) {
+        // add score to player.roundsPlayed[]
+        const _roundsPlayed = [...player.roundsPlayed];
+        const totalScoreToRound =
+          _roundsPlayed.reduce((n, r) => n + r.roundScore, 0) + score;
 
-          _roundsPlayed.push({
-            round: round.id,
-            roundNum: roundNum,
-            roundScore: score,
-            totalScoreToRound,
-          });
-          player.roundsPlayed = _roundsPlayed;
+        _roundsPlayed.push({
+          round: round.id,
+          roundNum: roundNum,
+          roundScore: score,
+          totalScoreToRound,
+        });
+        player.roundsPlayed = _roundsPlayed;
 
-          // add score to round.playerScores[]
-          const _playerScores = [...round.playerScores];
-          _playerScores.push({ player: playerId, roundScore: score });
-          round.playerScores = _playerScores;
+        // add score to round.playerScores[]
+        const _playerScores = [...round.playerScores];
+        _playerScores.push({ player: playerId, roundScore: score });
+        round.playerScores = _playerScores;
 
-          // set player.totalScore
-          player.totalScore = totalScoreToRound;
+        // set player.totalScore
+        player.totalScore = totalScoreToRound;
 
-          // if everyone has submitted scores, set true
-          if (game.players.length === round.playerScores.length) {
-            round.allScoresSubmitted = true;
-            if (round.winner) round.newRoundReady = true;
-          }
+        // if everyone has submitted scores, set true
+        if (game.players.length === round.playerScores.length) {
+          round.allScoresSubmitted = true;
+          if (round.winner) round.newRoundReady = true;
         }
-
-        await game.save(); // save all
       }
+
+      await game.save(); // save all
 
       res.status(200).send(`Your score has been saved!`);
     } catch (err) {
@@ -181,10 +184,11 @@ roundRouter.post(
   validateGameIdParam,
   verifyToken,
   verifyGamemaster,
+  getGameById,
   async (req: IVerifiedRequest, res: Response) => {
-    const { gameId } = req.params;
+    const { game } = req;
+
     try {
-      const game = await Game.findById(gameId);
       const prevRound = game.rounds[game.currentRoundNum - 1];
 
       if (prevRound.newRoundReady) {

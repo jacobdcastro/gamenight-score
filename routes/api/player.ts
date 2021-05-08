@@ -102,26 +102,24 @@ playerRouter.put(
   verifyToken,
   verifyPlayerGameIds,
   validatePlayerEditFields,
+  getGameById,
   async (req: IVerifiedRequest, res: Response) => {
     const { playerId, gameId } = req.params;
     const { name, color, icon } = req.body;
+    const { game } = req;
 
     try {
-      const game = await Game.findById(gameId); // find game
+      const player = game.players.id(playerId); // find player
 
-      if (game) {
-        const player = game.players.id(playerId); // find player
-
-        // change player fields
-        if (player) {
-          if (name) player.name = name;
-          if (color) player.avatar.color = color;
-          if (icon) player.avatar.icon = icon;
-        }
-
-        await game.save(); // save changes
-        res.json({ player: game.players.id(playerId), gameId: game.id });
+      // change player fields
+      if (player) {
+        if (name) player.name = name;
+        if (color) player.avatar.color = color;
+        if (icon) player.avatar.icon = icon;
       }
+
+      await game.save(); // save changes
+      res.json({ player: game.players.id(playerId), gameId: game.id });
     } catch (err) {
       sendServerError(res, err);
     }
