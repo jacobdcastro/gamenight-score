@@ -16,6 +16,7 @@
     "@xstate/react": "^1.3.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-router-dom": "^5.2.0",
     "xstate": "^4.18.0"
   },
   "devDependencies": {
@@ -26,6 +27,7 @@
     "@babel/preset-react": "^7.13.13",
     "@tailwindcss/postcss7-compat": "^2.1.0",
     "@teamsupercell/typings-for-css-modules-loader": "^2.5.1",
+    "@types/react-router-dom": "^5.1.7",
     "autoprefixer": "^10.2.5",
     "babel-loader": "^8.2.2",
     "css-loader": "^5.2.4",

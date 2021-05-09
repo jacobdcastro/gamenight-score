@@ -1,12 +1,24 @@
 import * as React from 'react';
-import Layout from './components/common/Layout/Layout';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import UserView from './Views/user';
 
 const App = () => {
   return (
-    <Layout>
-      Hello, world!
-      <br /> my name is jacob
-    </Layout>
+    <Router>
+      <Switch>
+        <Route path='/'>
+          <div>hello world</div>
+        </Route>
+
+        <Route path='/user'>
+          <UserView />
+        </Route>
+        <Route path='/create-game'></Route>
+        <Route path='/join-game'></Route>
+
+        <Route path='/play/:gameId'></Route>
+      </Switch>
+    </Router>
   );
 };
 

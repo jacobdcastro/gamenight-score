@@ -11,6 +11,11 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "declaration": true,
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": ["src/components/*"],
+      "@images/*": ["src/images/*"]
+    },
     "plugins": [
       {
         "name": "typescript-plugin-css-modules"
