@@ -1,45 +1,61 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebPackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: './src/index.tsx',
-  target: 'web',
-  mode: 'development',
   output: {
-    path: path.resolve(__dirname, 'build'),
-    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'main.bundle.js',
   },
-  resolve: {
-    extensions: ['.js', '.ts', '.tsx', '.json'],
+  devtool: 'inline-source-map',
+  devServer: {
+    contentBase: path.join(__dirname, 'dist'),
+    compress: true,
+    port: 9000,
   },
   module: {
     rules: [
       {
-        test: /\.(ts|tsx)$/,
-        loader: 'ts-loader',
-      },
-      {
-        enforce: 'pre',
-        test: /\.js$/,
-        loader: 'source-map-loader',
+        test: /\.ts(x)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'ts-loader',
+        },
       },
       {
         test: /\.css$/,
+        exclude: /node_modules/,
         use: [
+          MiniCssExtractPlugin.loader,
           'style-loader',
-          '@teamsupercell/typings-for-css-modules-loader',
           {
             loader: 'css-loader',
-            options: { modules: true },
+            options: {
+              importLoaders: 1,
+              modules: {
+                compileType: 'module',
+              },
+            },
           },
           'postcss-loader',
         ],
       },
+      {
+        test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2)$/i,
+        // More information here https://webpack.js.org/guides/asset-modules/
+        type: 'asset',
+      },
     ],
   },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
+  },
+
   plugins: [
-    new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'src', 'index.html'),
+    new MiniCssExtractPlugin(),
+    new HtmlWebPackPlugin({
+      template: './dist/index.html',
     }),
   ],
 };

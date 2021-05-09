@@ -1,10 +1,12 @@
 import React, { FC } from 'react';
 import s from './Layout.module.css';
 
-const Layout: FC = () => {
+const Layout: FC = ({ children }) => {
+  const className = s;
   return (
     <div className={s.root}>
-      <h1>testing 123</h1>
+      <h1 className={s.root}>testing 123</h1>
+      {children}
     </div>
   );
 };
