@@ -1,25 +1,26 @@
-import * as React from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-import UserView from './Views/user';
+import React from 'react';
+import logo from './logo.svg';
+import './App.css';
 
-const App = () => {
+function App() {
   return (
-    <Router>
-      <Switch>
-        <Route path='/'>
-          <div>hello world</div>
-        </Route>
-
-        <Route path='/user'>
-          <UserView />
-        </Route>
-        <Route path='/create-game'></Route>
-        <Route path='/join-game'></Route>
-
-        <Route path='/play/:gameId'></Route>
-      </Switch>
-    </Router>
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Edit <code>src/App.tsx</code> and save to reload.
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
+      </header>
+    </div>
   );
-};
+}
 
 export default App;
