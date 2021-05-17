@@ -1,0 +1,6 @@
+.root {
+  @apply p-2 my-3 text-white rounded-sm bg-blue-600 w-full;
+}
+.root:hover {
+  @apply bg-blue-700;
+}

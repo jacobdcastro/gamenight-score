@@ -50,6 +50,8 @@
     "@types/react-router-dom": "^5.1.7",
     "autoprefixer": "^9",
     "postcss": "^7",
+    "react-app-rewire-alias": "^1.0.3",
+    "react-app-rewired": "^2.1.8",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat"
   },
   "proxy": "http://localhost:2334"

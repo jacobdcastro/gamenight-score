@@ -1,3 +1,27 @@
 .root {
-  @apply relative;
+  @apply h-screen w-screen flex justify-center items-center;
+}
+
+.content {
+  @apply w-screen max-w-xs flex flex-col items-center;
+}
+
+.link {
+  @apply p-4 my-3 text-white rounded-sm bg-blue-600 w-full;
+}
+
+.loginBtn {
+  @apply bg-blue-600;
+}
+
+.loginBtn:hover {
+  @apply bg-blue-700;
+}
+
+.signupBtn {
+  @apply bg-red-600;
+}
+
+.signupBtn:hover {
+  @apply bg-red-700;
 }

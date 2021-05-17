@@ -1,4 +1,8 @@
 const path = require('path');
+const {
+  CracoAliasPlugin,
+  configPaths,
+} = require('react-app-rewire-alias/lib/aliasDangerous');
 
 module.exports = {
   style: {
@@ -14,4 +18,10 @@ module.exports = {
       '@views': path.resolve(__dirname, 'src/views/'),
     },
   },
+  plugins: [
+    {
+      plugin: CracoAliasPlugin,
+      options: { alias: configPaths('./tsconfig.paths.json') },
+    },
+  ],
 };

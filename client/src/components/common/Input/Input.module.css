@@ -1,0 +1,11 @@
+.root {
+  @apply my-3 flex flex-col;
+}
+
+.root input {
+  @apply p-2 rounded-sm border border-gray-200 outline-none w-full;
+}
+
+.root input:focus {
+  @apply border border-blue-400;
+}

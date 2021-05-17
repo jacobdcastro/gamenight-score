@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@components/*": ["/src/components/*"],
+      "@lib/*": ["/src/lib/*"],
+      "@images/*": ["/src/images/*"],
+      "@views/*": ["/src/views/*"]
+    }
+  }
+}
