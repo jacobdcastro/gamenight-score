@@ -1,3 +1,7 @@
 .root {
   @apply rounded-md w-full;
 }
+
+.testing {
+  @apply p-5;
+}

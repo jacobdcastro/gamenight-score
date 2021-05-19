@@ -9,26 +9,20 @@
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.1",
     "classnames": "^2.3.1",
+    "next": "^10.2.0",
+    "next-typed-css": "^1.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-query": "^3.16.0",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.3",
     "typescript": "^4.1.2",
-    "web-vitals": "^1.0.1"
+    "typescript-plugin-css-modules": "^3.2.0"
   },
   "scripts": {
-    "dev": "yarn start",
-    "start": "PORT=2333 craco start",
-    "build": "craco build",
+    "dev": "next dev -p 2333",
+    "start": "next start -p 2332",
+    "build": "next build",
     "test": "craco test",
     "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "browserslist": {
     "production": [
@@ -43,16 +37,13 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "^26.0.15",
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
-    "@types/react-router-dom": "^5.1.7",
-    "autoprefixer": "^9",
-    "postcss": "^7",
-    "react-app-rewire-alias": "^1.0.3",
-    "react-app-rewired": "^2.1.8",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat"
+    "@types/react-query": "^1.1.2",
+    "autoprefixer": "^10.2.5",
+    "postcss": "^8.2.15",
+    "tailwindcss": "^2.1.2"
   },
   "proxy": "http://localhost:2334"
 }
