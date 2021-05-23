@@ -20,21 +20,7 @@
   "scripts": {
     "dev": "next dev -p 2333",
     "start": "next start -p 2332",
-    "build": "next build",
-    "test": "craco test",
-    "eject": "react-scripts eject"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "build": "next build"
   },
   "devDependencies": {
     "@types/node": "^12.0.0",
