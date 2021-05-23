@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "rootDir": "./",
+    "outDir": "./build",
+    "esModuleInterop": true,
+    "strict": false
+  },
+  "include": [
+    "routes/**/*",
+    "server/utils/**/*",
+    "models/**/*",
+    "middleware/**/*",
+    "config/**/*",
+    "index.ts"
+  ],
+  "exclude": ["./node_modules", "./client"]
+}

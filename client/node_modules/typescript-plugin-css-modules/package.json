@@ -1,0 +1,110 @@
+{
+  "name": "typescript-plugin-css-modules",
+  "version": "3.2.0",
+  "main": "lib/index.js",
+  "author": "Brody McKee <mrmckeb@hotmail.com>",
+  "license": "MIT",
+  "description": "CSS modules support for TypeScript",
+  "homepage": "https://github.com/mrmckeb/typescript-plugin-css-modules",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrmckeb/typescript-plugin-css-modules"
+  },
+  "keywords": [
+    "css",
+    "scss",
+    "sass",
+    "less",
+    "stylus",
+    "modules",
+    "plugin",
+    "postcss",
+    "typescript"
+  ],
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "build": "rm -rf ./lib && tsc",
+    "lint": "eslint './src/**/*.{js,ts}' --max-warnings 0 && yarn prettier './**/*.{json,md,js,ts,yml}' -c",
+    "prepublishOnly": "yarn build",
+    "test": "jest ./src"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn test"
+    }
+  },
+  "jest": {
+    "clearMocks": true,
+    "collectCoverageFrom": [
+      "src/**/*.{ts}"
+    ],
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/fixtures/"
+    ]
+  },
+  "lint-staged": {
+    "./src/**/*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "./**/*.{json,md,yml}": [
+      "prettier --write"
+    ]
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all"
+  },
+  "resolutions": {
+    "postcss": "7.0.27"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "icss-utils": "^4.1.1",
+    "less": "^3.11.1",
+    "lodash.camelcase": "^4.3.0",
+    "postcss": "^7.0.27",
+    "postcss-filter-plugins": "^3.0.1",
+    "postcss-icss-keyframes": "^0.2.1",
+    "postcss-icss-selectors": "^2.0.3",
+    "postcss-load-config": "^2.1.0",
+    "reserved-words": "^0.1.2",
+    "sass": "^1.26.5",
+    "stylus": "^0.54.7",
+    "tsconfig-paths": "^3.9.0"
+  },
+  "devDependencies": {
+    "@types/icss-utils": "^4.1.0",
+    "@types/jest": "^25.2.1",
+    "@types/less": "^3.0.1",
+    "@types/lodash.camelcase": "^4.3.6",
+    "@types/node": "^12.12.17",
+    "@types/postcss-load-config": "^2.0.1",
+    "@types/postcss-nested": "^4.1.0",
+    "@types/reserved-words": "^0.1.0",
+    "@types/sass": "^1.16.0",
+    "@types/stylus": "^0.48.33",
+    "@typescript-eslint/eslint-plugin": "^2.29.0",
+    "@typescript-eslint/parser": "^2.29.0",
+    "bootstrap": "4.4.1",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
+    "husky": "^4.2.5",
+    "jest": "^25.4.0",
+    "lint-staged": "^10.1.7",
+    "postcss-import-sync2": "^1.1.0",
+    "prettier": "^2.0.5",
+    "sass-svg": "1.2.0",
+    "ts-jest": "^25.4.0",
+    "typescript": "^3.8.3"
+  },
+  "peerDependencies": {
+    "typescript": ">=3.0.0"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "mongoURIDev": "mongodb+srv://jacobdcastro:vuvrZfXGY7c@gamenightscore.stvgo.mongodb.net/development?retryWrites=true&w=majority",
+  "mongoURIProd": "mongodb+srv://jacobdcastro:vuvrZfXGY7c@gamenightscore.stvgo.mongodb.net/production?retryWrites=true&w=majority",
+  "jwtsecret": "a28b46325d1ba07c92518f7e318d1c9d11e9532f47fb3ef31b50c4b5c0fc81277c2ec8d94421195076ccf98dd78ac1912b58a1231c689d775f1aac6bc54eea33"
+}
