@@ -1,7 +1,6 @@
 {
+  "extends": "../tsconfig.global.json",
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
     "rootDir": "./",
     "outDir": "./build",
     "esModuleInterop": true,
@@ -14,6 +13,5 @@
     "middleware/**/*",
     "config/**/*",
     "index.ts"
-  ],
-  "exclude": ["./node_modules", "./client"]
+  ]
 }
